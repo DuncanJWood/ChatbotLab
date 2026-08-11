@@ -4,10 +4,9 @@ import { useForm } from 'react-hook-form';
 import { TextareaAutosize } from '@librechat/client';
 import { ContentTypes } from 'librechat-data-provider';
 import { Lightbulb, MessageSquare } from 'lucide-react';
-import { useUpdateMessageContentMutation } from 'librechat-data-provider/react-query';
 import type { Agents } from 'librechat-data-provider';
 import type { TEditProps } from '~/common';
-import { useMessagesOperations, useMessagesConversation } from '~/Providers';
+import { useMessagesOperations } from '~/Providers';
 import Container from '~/components/Chat/Messages/Content/Container';
 import { useGetAddedConvo } from '~/hooks/Chat';
 import { cn, removeFocusRings } from '~/utils';
@@ -26,10 +25,7 @@ const EditTextPart = ({
   part: Agents.MessageContentText | Agents.ReasoningDeltaUpdate;
 }) => {
   const localize = useLocalize();
-  const { conversation } = useMessagesConversation();
-  const { ask, getMessages, setMessages } = useMessagesOperations();
-
-  const { conversationId = '' } = conversation ?? {};
+  const { ask, getMessages } = useMessagesOperations();
   const message = useMemo(
     () => getMessages()?.find((msg) => msg.messageId === messageId),
     [getMessages, messageId],
@@ -40,8 +36,6 @@ const EditTextPart = ({
   const getAddedConvo = useGetAddedConvo();
 
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
-  const updateMessageContentMutation = useUpdateMessageContentMutation(conversationId ?? '');
-
   const isRTL = chatDirection?.toLowerCase() === 'rtl';
 
   const { register, handleSubmit, setValue } = useForm({
@@ -88,44 +82,6 @@ const EditTextPart = ({
         isEdited: true,
         addedConvo: getAddedConvo() || undefined,
       },
-    );
-
-    enterEdit(true);
-  };
-
-  const updateMessage = (data: { text: string }) => {
-    const messages = getMessages();
-    if (!messages) {
-      return;
-    }
-    updateMessageContentMutation.mutate({
-      index,
-      conversationId: conversationId ?? '',
-      text: data.text,
-      messageId,
-    });
-
-    const isInMessages = messages.some((msg) => msg.messageId === messageId);
-    if (!isInMessages) {
-      return enterEdit(true);
-    }
-
-    const updatedContent = message?.content?.map((part, idx) => {
-      if (part.type === ContentTypes.TEXT && idx === index) {
-        return { ...part, text: data.text };
-      }
-      return part;
-    });
-
-    setMessages(
-      messages.map((msg) =>
-        msg.messageId === messageId
-          ? {
-              ...msg,
-              content: updatedContent,
-            }
-          : msg,
-      ),
     );
 
     enterEdit(true);
@@ -193,14 +149,7 @@ const EditTextPart = ({
           disabled={isSubmitting}
           onClick={handleSubmit(resubmitMessage)}
         >
-          {localize('com_ui_save_submit')}
-        </button>
-        <button
-          className="btn btn-secondary relative mr-2"
-          disabled={isSubmitting}
-          onClick={handleSubmit(updateMessage)}
-        >
-          {localize('com_ui_save')}
+          {localize('com_ui_submit')}
         </button>
         <button className="btn btn-neutral relative" onClick={() => enterEdit(true)}>
           {localize('com_ui_cancel')}

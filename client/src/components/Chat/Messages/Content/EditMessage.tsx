@@ -2,9 +2,8 @@ import { useRef, useEffect, useCallback } from 'react';
 import { useRecoilValue } from 'recoil';
 import { useForm } from 'react-hook-form';
 import { TextareaAutosize, TooltipAnchor } from '@librechat/client';
-import { useUpdateMessageMutation } from 'librechat-data-provider/react-query';
 import type { TEditProps } from '~/common';
-import { useMessagesOperations, useMessagesConversation } from '~/Providers';
+import { useMessagesOperations } from '~/Providers';
 import { useGetAddedConvo } from '~/hooks/Chat';
 import { cn, removeFocusRings } from '~/utils';
 import { useLocalize } from '~/hooks';
@@ -20,15 +19,12 @@ const EditMessage = ({
   siblingIdx,
   setSiblingIdx,
 }: TEditProps) => {
-  const saveButtonRef = useRef<HTMLButtonElement | null>(null);
   const submitButtonRef = useRef<HTMLButtonElement | null>(null);
-  const { conversation } = useMessagesConversation();
-  const { getMessages, setMessages } = useMessagesOperations();
+  const { getMessages } = useMessagesOperations();
 
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const { conversationId, parentMessageId, messageId } = message;
-  const updateMessageMutation = useUpdateMessageMutation(conversationId ?? '');
   const localize = useLocalize();
 
   const chatDirection = useRecoilValue(store.chatDirection).toLowerCase();
@@ -61,7 +57,7 @@ const EditMessage = ({
         },
         {
           overrideFiles: message.files,
-          /** Pills on the edited user message stay visible after save-and-submit;
+          /** Pills on the edited user message stay visible after submission;
            *  carry the picks forward so the new turn primes the same skills
            *  instead of running unprimed. */
           overrideManualSkills: message.manualSkills,
@@ -104,46 +100,11 @@ const EditMessage = ({
     enterEdit(true);
   };
 
-  const updateMessage = (data: { text: string }) => {
-    const messages = getMessages();
-    if (!messages) {
-      return;
-    }
-    updateMessageMutation.mutate({
-      conversationId: conversationId ?? '',
-      model: conversation?.model ?? 'gpt-3.5-turbo',
-      text: data.text,
-      messageId,
-    });
-
-    const isInMessages = messages.some((message) => message.messageId === messageId);
-    if (!isInMessages) {
-      message.text = data.text;
-    } else {
-      setMessages(
-        messages.map((msg) =>
-          msg.messageId === messageId
-            ? {
-                ...msg,
-                text: data.text,
-              }
-            : msg,
-        ),
-      );
-    }
-
-    enterEdit(true);
-  };
-
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
         submitButtonRef.current?.click();
-      }
-      if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault();
-        saveButtonRef.current?.click();
       }
       if (e.key === 'Escape') {
         e.preventDefault();
@@ -193,20 +154,7 @@ const EditMessage = ({
               disabled={isSubmitting}
               onClick={handleSubmit(resubmitMessage)}
             >
-              {localize('com_ui_save_submit')}
-            </button>
-          }
-        />
-        <TooltipAnchor
-          description="Shift + Enter"
-          render={
-            <button
-              ref={saveButtonRef}
-              className="btn btn-secondary relative mr-2"
-              disabled={isSubmitting}
-              onClick={handleSubmit(updateMessage)}
-            >
-              {localize('com_ui_save')}
+              {localize('com_ui_submit')}
             </button>
           }
         />
