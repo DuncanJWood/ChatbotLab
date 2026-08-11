@@ -20,6 +20,7 @@ import { mergeSynthesizedToolOptions } from '~/agents/selection';
 import { synthesizeIntentToolOptions } from '~/agents/intent';
 import { requiresEphemeralUserConnection } from '~/mcp/utils';
 import { getCustomEndpointConfig } from '~/app/config';
+import { resolveBasePrompt } from '~/research';
 
 const { mcp_all, mcp_delimiter } = Constants;
 type ModelParametersWithPromptPrefix = AgentModelParameters & { promptPrefix?: string | null };
@@ -114,8 +115,15 @@ export async function loadEphemeralAgent(
   const requestPromptPrefix = req.body?.promptPrefix;
   const { promptPrefix: modelPromptPrefix, ...safeModelParameters } =
     model_parameters as ModelParametersWithPromptPrefix;
-  const instructions =
+  const explicitPrompt =
     typeof modelPromptPrefix === 'string' ? modelPromptPrefix : requestPromptPrefix;
+  const instructions = (
+    await resolveBasePrompt({
+      endpoint,
+      model: typeof model === 'string' ? model : undefined,
+      explicitPrompt,
+    })
+  )?.text;
 
   // Get endpoint config for modelDisplayLabel fallback
   const appConfig = req.config;
