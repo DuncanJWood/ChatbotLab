@@ -7,7 +7,6 @@ import {
   Permissions,
   ArtifactModes,
   PermissionTypes,
-  defaultAgentCapabilities,
 } from 'librechat-data-provider';
 import type { MenuItemProps } from '~/common';
 import {
@@ -40,7 +39,7 @@ const ToolsDropdown = ({ disabled }: ToolsDropdownProps) => {
     artifactsEnabled,
     fileSearchEnabled,
     skillsEnabled,
-  } = useAgentCapabilities(context?.agentsConfig?.capabilities ?? defaultAgentCapabilities);
+  } = useAgentCapabilities(context?.agentsConfig?.capabilities);
 
   const canUseWebSearch = useHasAccess({
     permissionType: PermissionTypes.WEB_SEARCH,

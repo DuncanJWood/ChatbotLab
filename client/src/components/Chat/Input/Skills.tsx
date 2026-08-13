@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { ScrollText } from 'lucide-react';
 import { CheckboxButton } from '@librechat/client';
-import { Permissions, PermissionTypes, defaultAgentCapabilities } from 'librechat-data-provider';
+import { Permissions, PermissionTypes } from 'librechat-data-provider';
 import { useLocalize, useHasAccess, useAgentCapabilities } from '~/hooks';
 import { useBadgeRowContext } from '~/Providers';
 
@@ -16,7 +16,7 @@ function Skills() {
   });
 
   const { skillsEnabled } = useAgentCapabilities(
-    context?.agentsConfig?.capabilities ?? defaultAgentCapabilities,
+    context?.agentsConfig?.capabilities,
   );
 
   if (!canUseSkills || !skillsEnabled) {

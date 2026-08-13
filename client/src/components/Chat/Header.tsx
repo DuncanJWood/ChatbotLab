@@ -10,6 +10,7 @@ import BookmarkMenu from './Menus/BookmarkMenu';
 import { TemporaryChat } from './TemporaryChat';
 import AddMultiConvo from './AddMultiConvo';
 import { useHasAccess } from '~/hooks';
+import { MULTI_CONVERSATION_UI_ENABLED } from '~/constants/features';
 import { cn } from '~/utils';
 import store from '~/store';
 
@@ -28,7 +29,6 @@ function Header() {
     permissionType: PermissionTypes.BOOKMARKS,
     permission: Permissions.USE,
   });
-
   const hasAccessToMultiConvo = useHasAccess({
     permissionType: PermissionTypes.MULTI_CONVO,
     permission: Permissions.USE,
@@ -56,7 +56,7 @@ function Header() {
               <ModelSelector startupConfig={startupConfig} />
               {interfaceConfig.presets === true && interfaceConfig.modelSelect && <PresetsMenu />}
               {hasAccessToBookmarks === true && <BookmarkMenu />}
-              {hasAccessToMultiConvo === true && <AddMultiConvo />}
+              {MULTI_CONVERSATION_UI_ENABLED && hasAccessToMultiConvo === true && <AddMultiConvo />}
               {isSmallScreen && (
                 <>
                   <ExportAndShareMenu

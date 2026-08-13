@@ -49,6 +49,7 @@ import SendButton from './SendButton';
 import EditBadges from './EditBadges';
 import BadgeRow from './BadgeRow';
 import Mention from './Mention';
+import { MULTI_CONVERSATION_UI_ENABLED } from '~/constants/features';
 import store from '~/store';
 
 interface ChatFormProps {
@@ -515,15 +516,17 @@ const ChatForm = memo(function ChatForm({
             />
           )}
           <div className={cn('flex w-full items-center', isRTL && 'flex-row-reverse')}>
-            <Mention
-              index={index}
-              popoverAtom={plusPopoverAtom}
-              newConversation={generateConversation}
-              textAreaRef={textAreaRef}
-              commandChar="+"
-              placeholder="com_ui_add_model_preset"
-              includeAssistants={false}
-            />
+            {MULTI_CONVERSATION_UI_ENABLED && (
+              <Mention
+                index={index}
+                popoverAtom={plusPopoverAtom}
+                newConversation={generateConversation}
+                textAreaRef={textAreaRef}
+                commandChar="+"
+                placeholder="com_ui_add_model_preset"
+                includeAssistants={false}
+              />
+            )}
             <Mention
               index={index}
               popoverAtom={mentionPopoverAtom}

@@ -5,6 +5,7 @@ import SkillsView from '../SkillsView';
 
 const mockUseHasAccess = jest.fn((..._args: unknown[]) => true);
 const mockUseMediaQuery = jest.fn((_query: string) => false);
+const mockUseGetAgentsConfig = jest.fn(() => ({ agentsConfig: { capabilities: ['skills'] } }));
 
 jest.mock(
   'librechat-data-provider',
@@ -36,6 +37,7 @@ jest.mock('~/hooks', () => ({
     user: { role: 'admin' },
     roles: { admin: {} },
   }),
+  useGetAgentsConfig: () => mockUseGetAgentsConfig(),
 }));
 
 jest.mock('~/data-provider', () => ({
@@ -67,6 +69,23 @@ describe('SkillsView', () => {
     mockUseHasAccess.mockReturnValue(true);
     mockUseMediaQuery.mockReset();
     mockUseMediaQuery.mockReturnValue(false);
+    mockUseGetAgentsConfig.mockReset();
+    mockUseGetAgentsConfig.mockReturnValue({ agentsConfig: { capabilities: ['skills'] } });
+  });
+
+  it('redirects to a chat when Agents is disabled', async () => {
+    mockUseGetAgentsConfig.mockReturnValue({ agentsConfig: null });
+    const router = createMemoryRouter(
+      [
+        { path: '/skills', element: <SkillsView /> },
+        { path: '/c/new', element: <div data-testid="chat-route" /> },
+      ],
+      { initialEntries: ['/skills'] },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    expect(await screen.findByTestId('chat-route')).toBeInTheDocument();
   });
 
   it('renders the create skill form for /skills/new', () => {

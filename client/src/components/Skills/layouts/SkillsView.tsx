@@ -3,7 +3,7 @@ import { PermissionTypes, Permissions } from 'librechat-data-provider';
 import { Navigate, useNavigate, useParams, useLocation, useSearchParams } from 'react-router-dom';
 import SkillFileViewer from '~/components/Skills/display/SkillFileViewer';
 import { CreateSkillForm, SkillForm } from '~/components/Skills/forms';
-import { useHasAccess, useAuthContext, useLocalize } from '~/hooks';
+import { useHasAccess, useAuthContext, useLocalize, useGetAgentsConfig } from '~/hooks';
 import SkillDetail from '~/components/Skills/display/SkillDetail';
 import SkillState from '~/components/Skills/display/SkillState';
 import OpenSidebar from '~/components/Chat/Menus/OpenSidebar';
@@ -22,6 +22,7 @@ export default function SkillsView() {
   const location = useLocation();
   const localize = useLocalize();
   const { user, roles } = useAuthContext();
+  const { agentsConfig } = useGetAgentsConfig();
 
   const hasAccess = useHasAccess({
     permissionType: PermissionTypes.SKILLS,
@@ -44,7 +45,7 @@ export default function SkillsView() {
     );
   }
 
-  if (!hasAccess) {
+  if (!agentsConfig || !hasAccess) {
     return <Navigate to="/c/new" replace />;
   }
 

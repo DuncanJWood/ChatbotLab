@@ -5,6 +5,7 @@ import { useGetLatestMessage } from '~/hooks/Messages/useLatestMessage';
 import useAgentCapabilities from '~/hooks/Agents/useAgentCapabilities';
 import useGetAgentsConfig from '~/hooks/Agents/useGetAgentsConfig';
 import useHasAccess from '~/hooks/Roles/useHasAccess';
+import { MULTI_CONVERSATION_UI_ENABLED } from '~/constants/features';
 import store from '~/store';
 
 /** Event keys that shouldn't trigger a command */
@@ -96,7 +97,12 @@ const useHandleKeyUp = ({
   }, [textAreaRef, setShowMentionPopover, atCommandEnabled]);
 
   const handlePlusCommand = useCallback(() => {
-    if (!hasMultiConvoAccess || !plusCommandEnabled || isAssistantsEndpoint(endpoint)) {
+    if (
+      !MULTI_CONVERSATION_UI_ENABLED ||
+      !hasMultiConvoAccess ||
+      !plusCommandEnabled ||
+      isAssistantsEndpoint(endpoint)
+    ) {
       return;
     }
     if (shouldTriggerCommand(textAreaRef, '+')) {

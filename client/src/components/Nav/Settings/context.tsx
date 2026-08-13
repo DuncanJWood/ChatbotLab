@@ -4,6 +4,7 @@ import { PermissionTypes, Permissions } from 'librechat-data-provider';
 import type { SettingsContextValue } from './types';
 import useProviderKeys from '../SettingsTabs/ProviderKeys/useProviderKeys';
 import usePersonalizationAccess from '~/hooks/usePersonalizationAccess';
+import { MULTI_CONVERSATION_UI_ENABLED } from '~/constants/features';
 import { useHasAccess, useAuthContext } from '~/hooks';
 import { useGetStartupConfig } from '~/data-provider';
 import store from '~/store';
@@ -33,7 +34,7 @@ export function useSettingsContext(): SettingsContextValue {
   const allowAccountDeletion = startupConfig?.allowAccountDeletion !== false;
   const aboutEnabled = startupConfig?.interface?.buildInfo !== false;
   const hasRemoteAgentsBool = hasRemoteAgents === true;
-  const hasMultiConvoBool = hasMultiConvo === true;
+  const hasMultiConvoBool = MULTI_CONVERSATION_UI_ENABLED && hasMultiConvo === true;
   const hasPromptsBool = hasPrompts === true;
   const engineTTS = useRecoilValue<string>(store.engineTTS);
   const hasUserProvidedEndpoints = useProviderKeys().length > 0;

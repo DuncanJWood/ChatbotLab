@@ -159,6 +159,13 @@ interface:
   multiConvo: true
   # Removes agents from the UI while preserving existing agent data.
   agents: false
+  # Removes MCP server controls from the UI while preserving existing server data.
+  mcpServers:
+    use: false
+    create: false
+    share: false
+    public: false
+    configureObo: false
   peoplePicker:
     users: true
     groups: true
