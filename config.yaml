@@ -157,11 +157,8 @@ interface:
     public: false
   bookmarks: true
   multiConvo: true
-  agents:
-    use: true
-    create: true
-    share: false
-    public: false
+  # Removes agents from the UI while preserving existing agent data.
+  agents: false
   peoplePicker:
     users: true
     groups: true
